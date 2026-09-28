@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Sistema acadêmico para cadastro e gerenciamento de amigos."
+    >
+
+    <title>Cadastro de Amigos</title>
+
+    <style>
+        :root {
+            --cor-fundo: #f3f5f7;
+            --cor-superficie: #ffffff;
+            --cor-superficie-secundaria: #eef2f5;
+            --cor-texto: #20242a;
+            --cor-texto-secundario: #667085;
+            --cor-borda: #d8dee6;
+
+            --cor-principal: #176b87;
+            --cor-principal-hover: #10556d;
+            --cor-destaque: #64ccc5;
+
+            --cor-sucesso: #18794e;
+            --cor-sucesso-fundo: #e9f8f0;
+
+            --cor-erro: #b42318;
+            --cor-erro-fundo: #fff0ee;
+
+            --cor-alerta: #8a5700;
+            --cor-alerta-fundo: #fff4d8;
+
+            --sombra:
+                0 1px 2px rgba(16, 24, 40, 0.05),
+                0 8px 24px rgba(16, 24, 40, 0.08);
+
+            --raio-pequeno: 6px;
+            --raio-medio: 10px;
+            --raio-grande: 16px;
+
+            --transicao: 180ms ease;
+        }
+
+        [data-tema="escuro"] {
+            --cor-fundo: #101417;
+            --cor-superficie: #171d21;
+            --cor-superficie-secundaria: #20282d;
+            --cor-texto: #f1f5f7;
+            --cor-texto-secundario: #a7b1b8;
+            --cor-borda: #344047;
+
+            --cor-principal: #5fb6cf;
+            --cor-principal-hover: #82cadc;
+            --cor-destaque: #64ccc5;
+
+            --cor-sucesso: #77d4a2;
+            --cor-sucesso-fundo: #173426;
+
+            --cor-erro: #ff9087;
+            --cor-erro-fundo: #3b1e1b;
+
+            --cor-alerta: #ffd078;
+            --cor-alerta-fundo: #392d16;
+
+            --sombra: 0 10px 28px rgba(0, 0, 0, 0.28);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--cor-fundo);
+            color: var(--cor-texto);
+            font-family:
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            transition:
+                background var(--transicao),
+                color var(--transicao);
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid rgba(23, 107, 135, 0.25);
+            outline-offset: 2px;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 32px));
+            margin-inline: auto;
+        }
+
+        .tela-login {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .login-container {
+            width: min(100%, 420px);
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .marca-icone {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: var(--cor-principal);
+            color: white;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .marca-texto strong {
+            display: block;
+            font-size: 19px;
+        }
+
+        .marca-texto span {
+            color: var(--cor-texto-secundario);
+            font-size: 14px;
+        }
+
+        .login-container .marca {
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .cartao {
+            background: var(--cor-superficie);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-grande);
+            box-shadow: var(--sombra);
+            padding: 28px;
+        }
+
+        .cartao h1,
+        .cartao h2 {
+            line-height: 1.2;
+        }
+
+        .cartao h1 {
+            margin-bottom: 8px;
+            font-size: 28px;
+        }
+
+        .cartao h2 {
+            font-size: 21px;
+        }
+
+        .texto-secundario {
+            color: var(--cor-texto-secundario);
+        }
+
+        .formulario {
+            display: grid;
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .grupo-campo {
+            display: grid;
+            gap: 7px;
+        }
+
+        .grupo-campo label {
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .campo {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            background: var(--cor-superficie);
+            color: var(--cor-texto);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-pequeno);
+            transition:
+                border-color var(--transicao),
+                box-shadow var(--transicao);
+        }
+
+        .campo:focus {
+            border-color: var(--cor-principal);
+            box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.12);
+            outline: none;
+        }
+
+        .campo::placeholder {
+            color: var(--cor-texto-secundario);
+        }
+
+        .linha-acoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .botao {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid transparent;
+            border-radius: var(--raio-pequeno);
+            padding: 10px 16px;
+            font-weight: 650;
+            transition:
+                background var(--transicao),
+                border-color var(--transicao),
+                transform var(--transicao);
+        }
+
+        .botao:active {
+            transform: translateY(1px);
+        }
+
+        .botao-principal {
+            background: var(--cor-principal);
+            color: white;
+        }
+
+        .botao-principal:hover {
+            background: var(--cor-principal-hover);
+        }
+
+        .botao-secundario {
+            background: var(--cor-superficie-secundaria);
+            color: var(--cor-texto);
+            border-color: var(--cor-borda);
+        }
+
+        .botao-secundario:hover {
+            border-color: var(--cor-principal);
+        }
+
+        .botao-perigo {
+            background: var(--cor-erro-fundo);
+            color: var(--cor-erro);
+            border-color: transparent;
+        }
+
+        .botao-perigo:hover {
+            border-color: var(--cor-erro);
+        }
+
+        .botao-icone {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+        }
+
+        .mensagem {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: var(--raio-pequeno);
+            font-size: 14px;
+        }
+
+        .mensagem.ativa {
+            display: block;
+        }
+
+        .mensagem.erro {
+            background: var(--cor-erro-fundo);
+            color: var(--cor-erro);
+        }
+
+        .mensagem.sucesso {
+            background: var(--cor-sucesso-fundo);
+            color: var(--cor-sucesso);
+        }
+
+        .dados-teste {
+            margin-top: 20px;
+            padding: 14px;
+            background: var(--cor-superficie-secundaria);
+            border-radius: var(--raio-pequeno);
+            color: var(--cor-texto-secundario);
+            font-size: 14px;
+        }
+
+        .cabecalho {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: color-mix(
+                in srgb,
+                var(--cor-superficie) 92%,
+                transparent
+            );
+            border-bottom: 1px solid var(--cor-borda);
+            backdrop-filter: blur(12px);
+        }
+
+        .cabecalho-conteudo {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .cabecalho-acoes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conteudo-principal {
+            padding-block: 32px 64px;
+        }
+
+        .apresentacao {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .apresentacao h1 {
+            font-size: clamp(26px, 4vw, 38px);
+            margin-bottom: 6px;
+        }
+
+        .resumo {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .resumo-item {
+            background: var(--cor-superficie);
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-medio);
+            padding: 20px;
+        }
+
+        .resumo-item strong {
+            display: block;
+            margin-top: 4px;
+            color: var(--cor-principal);
+            font-size: 30px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .grade-principal {
+            display: grid;
+            grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .cabecalho-cartao {
+            margin-bottom: 18px;
+        }
+
+        .cabecalho-cartao h2 {
+            margin-bottom: 5px;
+        }
+
+        .barra-ferramentas {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .busca {
+            flex: 1;
+        }
+
+        .tabela-container {
+            overflow-x: auto;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-medio);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--cor-borda);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: var(--cor-superficie-secundaria);
+            color: var(--cor-texto-secundario);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        tbody tr:hover {
+            background: color-mix(
+                in srgb,
+                var(--cor-principal) 5%,
+                transparent
+            );
+        }
+
+        .nome-amigo {
+            font-weight: 700;
+        }
+
+        .acoes-tabela {
+            display: flex;
+            gap: 8px;
+        }
+
+        .botao-tabela {
+            min-height: 36px;
+            padding: 7px 11px;
+            border: 1px solid var(--cor-borda);
+            border-radius: var(--raio-pequeno);
+            background: var(--cor-superficie);
+            color: var(--cor-texto);
+            font-size: 14px;
+        }
+
+        .botao-tabela:hover {
+            border-color: var(--cor-principal);
+            color: var(--cor-principal);
+        }
+
+        .botao-tabela.excluir:hover {
+            border-color: var(--cor-erro);
+            color: var(--cor-erro);
+        }
+
+        .estado-vazio {
+            padding: 44px 24px;
+            text-align: center;
+            color: var(--cor-texto-secundario);
+        }
+
+        .estado-vazio strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--cor-texto);
+            font-size: 18px;
+        }
+
+        .rodape {
+            padding: 24px;
+            border-top: 1px solid var(--cor-borda);
+            text-align: center;
+            color: var(--cor-texto-secundario);
+            font-size: 14px;
+        }
+
+        .aviso-demo {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background: var(--cor-alerta-fundo);
+            color: var(--cor-alerta);
+            border-radius: var(--raio-pequeno);
+            font-size: 14px;
+        }
+
+        @media (max-width: 850px) {
+            .grade-principal {
+                grid-template-columns: 1fr;
+            }
+
+            .resumo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .container {
+                width: min(100% - 20px, 1120px);
+            }
+
+            .cabecalho-conteudo {
+                min-height: 64px;
+            }
+
+            .marca-texto {
+                display: none;
+            }
+
+            .apresentacao {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .barra-ferramentas {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .linha-acoes {
+                flex-direction: column;
+            }
+
+            .linha-acoes .botao {
+                width: 100%;
+            }
+
+            .cartao {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Tela de login -->
+    <main id="telaLogin" class="tela-login">
+        <section class="login-container">
+            <div class="marca">
+                <div class="marca-icone" aria-hidden="true">CA</div>
+
+                <div class="marca-texto">
+                    <strong>Cadastro de Amigos</strong>
+                    <span>Projeto de Programação Web</span>
+                </div>
+            </div>
+
+            <div class="cartao">
+                <h1>Acessar o sistema</h1>
+
+                <p class="texto-secundario">
+                    Informe seu usuário e sua senha para continuar.
+                </p>
+
+                <form id="formLogin" class="formulario">
+                    <div class="grupo-campo">
+                        <label for="usuario">Usuário</label>
+
+                        <input
+                            class="campo"
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Digite o usuário"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="senha">Senha</label>
+
+                        <input
+                            class="campo"
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite a senha"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+
+                    <button class="botao botao-principal" type="submit">
+                        Entrar
+                    </button>
+                </form>
+
+                <div
+                    id="mensagemLogin"
+                    class="mensagem erro"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+                <div class="dados-teste">
+                    <strong>Dados para demonstração</strong><br>
+                    Usuário: admin<br>
+                    Senha: 1234
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sistema -->
+    <div id="sistema" class="oculto">
+        <header class="cabecalho">
+            <div class="container cabecalho-conteudo">
+                <div class="marca">
+                    <div class="marca-icone" aria-hidden="true">CA</div>
+
+                    <div class="marca-texto">
+                        <strong>Cadastro de Amigos</strong>
+                        <span>Painel administrativo</span>
+                    </div>
+                </div>
+
+                <div class="cabecalho-acoes">
+                    <button
+                        id="botaoTema"
+                        class="botao botao-secundario botao-icone"
+                        type="button"
+                        aria-label="Alternar tema"
+                        title="Alternar tema"
+                    >
+                        ☾
+                    </button>
+
+                    <button
+                        id="botaoSair"
+                        class="botao botao-secundario"
+                        type="button"
+                    >
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container conteudo-principal">
+            <section class="apresentacao">
+                <div>
+                    <h1>Gerenciamento de amigos</h1>
+
+                    <p class="texto-secundario">
+                        Cadastre, consulte, altere e exclua os registros.
+                    </p>
+                </div>
+
+                <button
+                    id="botaoExportar"
+                    class="botao botao-secundario"
+                    type="button"
+                >
+                    Exportar dados
+                </button>
+            </section>
+
+            <section class="resumo" aria-label="Resumo do sistema">
+                <article class="resumo-item">
+                    <span class="texto-secundario">Total de amigos</span>
+                    <strong id="totalAmigos">0</strong>
+                </article>
+
+                <article class="resumo-item">
+                    <span class="texto-secundario">Cidades diferentes</span>
+                    <strong id="totalCidades">0</strong>
+                </article>
+
+                <article class="resumo-item">
+                    <span class="texto-secundario">Registros encontrados</span>
+                    <strong id="totalEncontrados">0</strong>
+                </article>
+            </section>
+
+            <section class="grade-principal">
+                <article class="cartao">
+                    <div class="cabecalho-cartao">
+                        <h2 id="tituloFormulario">Cadastrar amigo</h2>
+
+                        <p class="texto-secundario">
+                            Preencha os dados abaixo.
+                        </p>
+                    </div>
+
+                    <form id="formAmigo" class="formulario">
+                        <input type="hidden" id="amigoId">
+
+                        <div class="grupo-campo">
+                            <label for="nome">Nome completo</label>
+
+                            <input
+                                class="campo"
+                                type="text"
+                                id="nome"
+                                maxlength="80"
+                                placeholder="Exemplo: Ana Souza"
+                                required
+                            >
+                        </div>
+
+                        <div class="grupo-campo">
+                            <label for="email">E-mail</label>
+
+                            <input
+                                class="campo"
+                                type="email"
+                                id="email"
+                                maxlength="100"
+                                placeholder="ana@email.com"
+                                required
+                            >
+                        </div>
+
+                        <div class="grupo-campo">
+                            <label for="telefone">Telefone</label>
+
+                            <input
+                                class="campo"
+                                type="tel"
+                                id="telefone"
+                                maxlength="15"
+                                placeholder="(19) 99999-9999"
+                                required
+                            >
+                        </div>
+
+                        <div class="grupo-campo">
+                            <label for="nascimento">Data de nascimento</label>
+
+                            <input
+                                class="campo"
+                                type="date"
+                                id="nascimento"
+                                required
+                            >
+                        </div>
+
+                        <div class="grupo-campo">
+                            <label for="cidade">Cidade</label>
+
+                            <input
+                                class="campo"
+                                type="text"
+                                id="cidade"
+                                maxlength="60"
+                                placeholder="Exemplo: Sumaré"
+                                required
+                            >
+                        </div>
+
+                        <div class="linha-acoes">
+                            <button
+                                class="botao botao-principal"
+                                type="submit"
+                            >
+                                <span id="textoBotaoSalvar">Cadastrar</span>
+                            </button>
+
+                            <button
+                                id="botaoCancelar"
+                                class="botao botao-secundario oculto"
+                                type="button"
+                            >
+                                Cancelar edição
+                            </button>
+                        </div>
+                    </form>
+
+                    <div
+                        id="mensagemFormulario"
+                        class="mensagem"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+                </article>
+
+                <article class="cartao">
+                    <div class="cabecalho-cartao">
+                        <h2>Amigos cadastrados</h2>
+
+                        <p class="texto-secundario">
+                            Use a busca para localizar um registro.
+                        </p>
+                    </div>
+
+                    <div class="barra-ferramentas">
+                        <input
+                            class="campo busca"
+                            type="search"
+                            id="campoBusca"
+                            placeholder="Buscar por nome, e-mail ou cidade"
+                            aria-label="Buscar amigos"
+                        >
+
+                        <button
+                            id="botaoLimpar"
+                            class="botao botao-perigo"
+                            type="button"
+                        >
+                            Limpar dados
+                        </button>
+                    </div>
+
+                    <div id="tabelaContainer" class="tabela-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Telefone</th>
+                                    <th>Nascimento</th>
+                                    <th>Cidade</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="corpoTabela"></tbody>
+                        </table>
+
+                        <div id="estadoVazio" class="estado-vazio oculto">
+                            <strong>Nenhum amigo encontrado</strong>
+
+                            <span>
+                                Cadastre um novo amigo ou altere a busca.
+                            </span>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <p class="aviso-demo">
+                Este projeto é uma demonstração acadêmica. Os registros são
+                salvos somente no navegador utilizado.
+            </p>
+        </main>
+
+        <footer class="rodape">
+            Cadastro de Amigos — Projeto de Programação Web
+        </footer>
+    </div>
+
+    <script>
+        /*
+         * CADASTRO DE AMIGOS
+         * Projeto acadêmico feito com HTML, CSS e JavaScript.
+         *
+         * O localStorage é usado para simular o banco de dados.
+         * O sessionStorage mantém o usuário conectado durante a sessão.
+         */
+
+        const CHAVE_AMIGOS = "cadastroAmigos_lista";
+        const CHAVE_LOGIN = "cadastroAmigos_login";
+        const CHAVE_TEMA = "cadastroAmigos_tema";
+
+        const USUARIO_TESTE = "admin";
+        const SENHA_TESTE = "1234";
+
+        const telaLogin = document.getElementById("telaLogin");
+        const sistema = document.getElementById("sistema");
+
+        const formLogin = document.getElementById("formLogin");
+        const usuario = document.getElementById("usuario");
+        const senha = document.getElementById("senha");
+        const mensagemLogin = document.getElementById("mensagemLogin");
+
+        const formAmigo = document.getElementById("formAmigo");
+        const amigoId = document.getElementById("amigoId");
+        const nome = document.getElementById("nome");
+        const email = document.getElementById("email");
+        const telefone = document.getElementById("telefone");
+        const nascimento = document.getElementById("nascimento");
+        const cidade = document.getElementById("cidade");
+
+        const tituloFormulario =
+            document.getElementById("tituloFormulario");
+
+        const textoBotaoSalvar =
+            document.getElementById("textoBotaoSalvar");
+
+        const botaoCancelar =
+            document.getElementById("botaoCancelar");
+
+        const mensagemFormulario =
+            document.getElementById("mensagemFormulario");
+
+        const campoBusca = document.getElementById("campoBusca");
+        const corpoTabela = document.getElementById("corpoTabela");
+        const estadoVazio = document.getElementById("estadoVazio");
+
+        const totalAmigos = document.getElementById("totalAmigos");
+        const totalCidades = document.getElementById("totalCidades");
+        const totalEncontrados =
+            document.getElementById("totalEncontrados");
+
+        const botaoSair = document.getElementById("botaoSair");
+        const botaoTema = document.getElementById("botaoTema");
+        const botaoLimpar = document.getElementById("botaoLimpar");
+        const botaoExportar =
+            document.getElementById("botaoExportar");
+
+        let amigos = carregarAmigos();
+
+        function carregarAmigos() {
+            const dadosSalvos = localStorage.getItem(CHAVE_AMIGOS);
+
+            if (!dadosSalvos) {
+                return [];
+            }
+
+            try {
+                const dadosConvertidos = JSON.parse(dadosSalvos);
+
+                return Array.isArray(dadosConvertidos)
+                    ? dadosConvertidos
+                    : [];
+            } catch (erro) {
+                console.error("Não foi possível carregar os dados.", erro);
+                return [];
+            }
+        }
+
+        function salvarAmigos() {
+            localStorage.setItem(
+                CHAVE_AMIGOS,
+                JSON.stringify(amigos)
+            );
+        }
+
+        function criarId() {
+            if (
+                window.crypto &&
+                typeof window.crypto.randomUUID === "function"
+            ) {
+                return window.crypto.randomUUID();
+            }
+
+            return Date.now().toString();
+        }
+
+        function normalizarTexto(texto) {
+            return texto
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function formatarData(data) {
+            if (!data) {
+                return "";
+            }
+
+            const partes = data.split("-");
+
+            if (partes.length !== 3) {
+                return data;
+            }
+
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        function mostrarMensagem(elemento, texto, tipo) {
+            elemento.textContent = texto;
+            elemento.className = `mensagem ativa ${tipo}`;
+
+            window.setTimeout(() => {
+                elemento.classList.remove("ativa");
+            }, 3500);
+        }
+
+        function atualizarResumo(quantidadeFiltrada) {
+            const cidades = new Set(
+                amigos.map((amigo) =>
+                    normalizarTexto(amigo.cidade.trim())
+                )
+            );
+
+            totalAmigos.textContent = amigos.length;
+            totalCidades.textContent = cidades.size;
+            totalEncontrados.textContent = quantidadeFiltrada;
+        }
+
+        function criarCelula(texto, classe = "") {
+            const celula = document.createElement("td");
+            celula.textContent = texto;
+
+            if (classe) {
+                celula.className = classe;
+            }
+
+            return celula;
+        }
+
+        function renderizarTabela() {
+            const busca = normalizarTexto(campoBusca.value.trim());
+
+            const amigosFiltrados = amigos.filter((amigo) => {
+                const conteudo = normalizarTexto(
+                    `${amigo.nome} ${amigo.email} ${amigo.cidade}`
+                );
+
+                return conteudo.includes(busca);
+            });
+
+            corpoTabela.replaceChildren();
+
+            amigosFiltrados.forEach((amigo) => {
+                const linha = document.createElement("tr");
+
+                linha.appendChild(
+                    criarCelula(amigo.nome, "nome-amigo")
+                );
+
+                linha.appendChild(criarCelula(amigo.email));
+                linha.appendChild(criarCelula(amigo.telefone));
+
+                linha.appendChild(
+                    criarCelula(formatarData(amigo.nascimento))
+                );
+
+                linha.appendChild(criarCelula(amigo.cidade));
+
+                const celulaAcoes = document.createElement("td");
+                const grupoAcoes = document.createElement("div");
+
+                grupoAcoes.className = "acoes-tabela";
+
+                const botaoEditar = document.createElement("button");
+                botaoEditar.type = "button";
+                botaoEditar.className = "botao-tabela";
+                botaoEditar.textContent = "Editar";
+                botaoEditar.setAttribute(
+                    "aria-label",
+                    `Editar ${amigo.nome}`
+                );
+
+                botaoEditar.addEventListener("click", () => {
+                    iniciarEdicao(amigo.id);
+                });
+
+                const botaoExcluir = document.createElement("button");
+                botaoExcluir.type = "button";
+                botaoExcluir.className = "botao-tabela excluir";
+                botaoExcluir.textContent = "Excluir";
+                botaoExcluir.setAttribute(
+                    "aria-label",
+                    `Excluir ${amigo.nome}`
+                );
+
+                botaoExcluir.addEventListener("click", () => {
+                    excluirAmigo(amigo.id);
+                });
+
+                grupoAcoes.append(botaoEditar, botaoExcluir);
+                celulaAcoes.appendChild(grupoAcoes);
+                linha.appendChild(celulaAcoes);
+
+                corpoTabela.appendChild(linha);
+            });
+
+            const semResultados = amigosFiltrados.length === 0;
+
+            estadoVazio.classList.toggle("oculto", !semResultados);
+
+            corpoTabela
+                .closest("table")
+                .classList.toggle("oculto", semResultados);
+
+            atualizarResumo(amigosFiltrados.length);
+        }
+
+        function limparFormulario() {
+            formAmigo.reset();
+            amigoId.value = "";
+            tituloFormulario.textContent = "Cadastrar amigo";
+            textoBotaoSalvar.textContent = "Cadastrar";
+            botaoCancelar.classList.add("oculto");
+        }
+
+        function iniciarEdicao(id) {
+            const amigo = amigos.find(
+                (registro) => registro.id === id
+            );
+
+            if (!amigo) {
+                return;
+            }
+
+            amigoId.value = amigo.id;
+            nome.value = amigo.nome;
+            email.value = amigo.email;
+            telefone.value = amigo.telefone;
+            nascimento.value = amigo.nascimento;
+            cidade.value = amigo.cidade;
+
+            tituloFormulario.textContent = "Alterar amigo";
+            textoBotaoSalvar.textContent = "Salvar alterações";
+            botaoCancelar.classList.remove("oculto");
+
+            nome.focus();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function excluirAmigo(id) {
+            const amigo = amigos.find(
+                (registro) => registro.id === id
+            );
+
+            if (!amigo) {
+                return;
+            }
+
+            const confirmou = window.confirm(
+                `Deseja realmente excluir o cadastro de ${amigo.nome}?`
+            );
+
+            if (!confirmou) {
+                return;
+            }
+
+            amigos = amigos.filter(
+                (registro) => registro.id !== id
+            );
+
+            salvarAmigos();
+            renderizarTabela();
+
+            if (amigoId.value === id) {
+                limparFormulario();
+            }
+
+            mostrarMensagem(
+                mensagemFormulario,
+                "Cadastro excluído com sucesso.",
+                "sucesso"
+            );
+        }
+
+        function verificarEmailDuplicado(emailInformado, idAtual) {
+            return amigos.some((amigo) => {
+                const mesmoEmail =
+                    normalizarTexto(amigo.email) ===
+                    normalizarTexto(emailInformado);
+
+                const registroDiferente = amigo.id !== idAtual;
+
+                return mesmoEmail && registroDiferente;
+            });
+        }
+
+        function aplicarMascaraTelefone(evento) {
+            let valor = evento.target.value.replace(/\D/g, "");
+
+            valor = valor.slice(0, 11);
+
+            if (valor.length > 10) {
+                valor = valor.replace(
+                    /^(\d{2})(\d{5})(\d{4})$/,
+                    "($1) $2-$3"
+                );
+            } else if (valor.length > 6) {
+                valor = valor.replace(
+                    /^(\d{2})(\d{4})(\d{0,4})$/,
+                    "($1) $2-$3"
+                );
+            } else if (valor.length > 2) {
+                valor = valor.replace(
+                    /^(\d{2})(\d+)/,
+                    "($1) $2"
+                );
+            } else if (valor.length > 0) {
+                valor = valor.replace(/^(\d*)/, "($1");
+            }
+
+            evento.target.value = valor;
+        }
+
+        function realizarLogin(evento) {
+            evento.preventDefault();
+
+            const usuarioInformado = usuario.value.trim();
+            const senhaInformada = senha.value;
+
+            if (
+                usuarioInformado === USUARIO_TESTE &&
+                senhaInformada === SENHA_TESTE
+            ) {
+                sessionStorage.setItem(CHAVE_LOGIN, "ativo");
+                mensagemLogin.classList.remove("ativa");
+                abrirSistema();
+                return;
+            }
+
+            mostrarMensagem(
+                mensagemLogin,
+                "Usuário ou senha incorretos.",
+                "erro"
+            );
+        }
+
+        function abrirSistema() {
+            telaLogin.classList.add("oculto");
+            sistema.classList.remove("oculto");
+            renderizarTabela();
+        }
+
+        function sairDoSistema() {
+            sessionStorage.removeItem(CHAVE_LOGIN);
+            sistema.classList.add("oculto");
+            telaLogin.classList.remove("oculto");
+            formLogin.reset();
+            usuario.focus();
+        }
+
+        function salvarCadastro(evento) {
+            evento.preventDefault();
+
+            const idAtual = amigoId.value;
+
+            const amigo = {
+                id: idAtual || criarId(),
+                nome: nome.value.trim(),
+                email: email.value.trim(),
+                telefone: telefone.value.trim(),
+                nascimento: nascimento.value,
+                cidade: cidade.value.trim()
+            };
+
+            if (
+                !amigo.nome ||
+                !amigo.email ||
+                !amigo.telefone ||
+                !amigo.nascimento ||
+                !amigo.cidade
+            ) {
+                mostrarMensagem(
+                    mensagemFormulario,
+                    "Preencha todos os campos.",
+                    "erro"
+                );
+
+                return;
+            }
+
+            if (
+                verificarEmailDuplicado(
+                    amigo.email,
+                    idAtual
+                )
+            ) {
+                mostrarMensagem(
+                    mensagemFormulario,
+                    "Já existe um amigo cadastrado com esse e-mail.",
+                    "erro"
+                );
+
+                return;
+            }
+
+            if (idAtual) {
+                amigos = amigos.map((registro) =>
+                    registro.id === idAtual ? amigo : registro
+                );
+
+                mostrarMensagem(
+                    mensagemFormulario,
+                    "Cadastro alterado com sucesso.",
+                    "sucesso"
+                );
+            } else {
+                amigos.push(amigo);
+
+                mostrarMensagem(
+                    mensagemFormulario,
+                    "Amigo cadastrado com sucesso.",
+                    "sucesso"
+                );
+            }
+
+            amigos.sort((a, b) =>
+                a.nome.localeCompare(b.nome, "pt-BR")
+            );
+
+            salvarAmigos();
+            limparFormulario();
+            renderizarTabela();
+        }
+
+        function limparTodosOsDados() {
+            if (amigos.length === 0) {
+                return;
+            }
+
+            const confirmou = window.confirm(
+                "Deseja excluir todos os amigos cadastrados?"
+            );
+
+            if (!confirmou) {
+                return;
+            }
+
+            amigos = [];
+            salvarAmigos();
+            limparFormulario();
+            renderizarTabela();
+
+            mostrarMensagem(
+                mensagemFormulario,
+                "Todos os registros foram excluídos.",
+                "sucesso"
+            );
+        }
+
+        function exportarDados() {
+            if (amigos.length === 0) {
+                window.alert(
+                    "Não existem dados cadastrados para exportar."
+                );
+
+                return;
+            }
+
+            const conteudo = JSON.stringify(amigos, null, 2);
+            const arquivo = new Blob(
+                [conteudo],
+                { type: "application/json;charset=utf-8" }
+            );
+
+            const enderecoTemporario =
+                URL.createObjectURL(arquivo);
+
+            const link = document.createElement("a");
+
+            link.href = enderecoTemporario;
+            link.download = "amigos.json";
+            link.click();
+
+            URL.revokeObjectURL(enderecoTemporario);
+        }
+
+        function aplicarTema(tema) {
+            document.documentElement.setAttribute(
+                "data-tema",
+                tema
+            );
+
+            botaoTema.textContent =
+                tema === "escuro" ? "☀" : "☾";
+
+            localStorage.setItem(CHAVE_TEMA, tema);
+        }
+
+        function alternarTema() {
+            const temaAtual =
+                document.documentElement.getAttribute("data-tema");
+
+            aplicarTema(
+                temaAtual === "escuro" ? "claro" : "escuro"
+            );
+        }
+
+        function iniciarTema() {
+            const temaSalvo =
+                localStorage.getItem(CHAVE_TEMA);
+
+            if (temaSalvo) {
+                aplicarTema(temaSalvo);
+                return;
+            }
+
+            const prefereEscuro = window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches;
+
+            aplicarTema(prefereEscuro ? "escuro" : "claro");
+        }
+
+        formLogin.addEventListener("submit", realizarLogin);
+        formAmigo.addEventListener("submit", salvarCadastro);
+
+        telefone.addEventListener(
+            "input",
+            aplicarMascaraTelefone
+        );
+
+        campoBusca.addEventListener(
+            "input",
+            renderizarTabela
+        );
+
+        botaoCancelar.addEventListener(
+            "click",
+            limparFormulario
+        );
+
+        botaoLimpar.addEventListener(
+            "click",
+            limparTodosOsDados
+        );
+
+        botaoExportar.addEventListener(
+            "click",
+            exportarDados
+        );
+
+        botaoSair.addEventListener(
+            "click",
+            sairDoSistema
+        );
+
+        botaoTema.addEventListener(
+            "click",
+            alternarTema
+        );
+
+        iniciarTema();
+
+        if (
+            sessionStorage.getItem(CHAVE_LOGIN) === "ativo"
+        ) {
+            abrirSistema();
+        } else {
+            usuario.focus();
+        }
+    </script>
+</body>
+</html>
